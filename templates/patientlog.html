@@ -21,7 +21,7 @@
             $(document).ready(function() {
                 $("#add").click(function() {
                     var value = $("#symp").val();
-                    $("ul").append("<li>" +value+ "</li>");
+                    $("ul").append("<li style='font-size: 20px;'>" +value+ "</li>");
                     $(value).hide();
                     $("#symp").val("");
                 })
@@ -73,10 +73,13 @@
 
             <!-- Page Heading -->
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-md-6">
                     <h1 class="page-header">Patient:
                         <small>John Doe</small>
                     </h1>
+                </div>
+                <div class="col-md-6">
+                    <h1 class="page-header">Logged Symptoms</h1>
                 </div>
             </div>
             
@@ -91,6 +94,7 @@
                 </div>
             
                 <div class="col-md-6">
+                    
                     <ul></ul>
                 </div>
             </div>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
+
+        <link rel = "stylesheet" type = "text/css" href="/static/css/col-portfolio.css">
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        
+        <script>
+            
+            $(document).ready(function() {
+                $("#add_allergy").click(function() {
+                    var value = $("#input_allergy").val();
+                    if (value.length > 0) {
+                        $("#allergies").append("<li style='font-size: 20px;'>" +value+ "</li>");
+                    }
+                    $("#input_allergy").val("");
+                })
+                $("#add_disease").click(function() {
+                    var value = $("#input_disease").val();
+                    if (value.length > 0) {
+                        $("#diseases").append("<li style='font-size: 20px;'>" +value+ "</li>");
+                    }
+                    $("#input_disease").val("");
+                })
+            });
+                    
+
+        </script>
+
+
+    </head>
+
+    <body>
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Username's Dashboard</a>
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="#">About</a>
+                        </li>
+                        <li>
+                            <a href="#">Services</a>
+                        </li>
+                        <li>
+                            <a href="#">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container -->
+        </nav>
+
+        <br>
+        <!-- Page Content -->
+        <div class="container">
+
+            <!-- Page Heading -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">New Patient
+                    </h1>
+                </div>
+            </div>
+
+        <div class="row">
+            
+            <div class="col-md-5">
+                <h3>Patient's Name Information</h3>
+                
+                <form method="post">
+                    <div class="form-group form-inline">
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Name</label>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <input name="name"></input>
+                                </div>
+                            </div>
+                    
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Sex</label>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <input name="sex"></input>
+                                </div> 
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Date of Birth</label>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <input name="dob"></input>
+                                </div>
+                            </div>
+                
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Age</label>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <input name="age"></input>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Address</label>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <input name="address"></input>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Phone Number</label>
+                                </div>
+                                            
+                                <div class="col-md-4">
+                                    <input name="phone"></input>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Email</label>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <input name="email"></input>
+                                </div>    
+                            </div>
+
+                        </div>
+                    </form>
+                    </div>
+
+            <div class="col-md-7"></div>
+                <h3>Patient's Current Medical Conditions</h3>
+                
+                <form method="post">
+                    <div class="form-group form-inline">
+                                
+                                <div class="col-md-3">
+                                    <h1><small>Allergies</small></h1>
+                                    <input id="input_allergy" placeholder="Peanuts"></input>
+                                    <button id="add_allergy">Add</button>
+                                    <ul id="allergies">
+                                    
+                                    </ul>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <h1><small>Diseases</small></h1>
+                                    <input id="input_disease" placeholder="Malaria"></input>
+                                    <button id="add_disease">Add</button>
+                                    <ul id="diseases">
+                                    
+                                    </ul>
+                                </div>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
