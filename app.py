@@ -3,8 +3,11 @@ from flask import Flask, render_template, redirect, request
 from bson.objectid import ObjectId
 from passlib.hash import bcrypt
 from pymongo import MongoClient
+#from xml.etree import ElementTree
 
+import json
 import pymongo
+import requests
 
 app = Flask(__name__)
 login_manager = LoginManager()
@@ -15,6 +18,8 @@ client = MongoClient()
 db = client.test_db
 
 users = db.users
+
+headers = {'Accept' : 'application/json'}
 
 #User Model
 class User(object):
@@ -107,5 +112,19 @@ def register():
 def hashPassword(password):
     return bcrypt.encrypt(password)
 
+def pullFIHRPatientBio(patient_id):
+	bio = requests.get("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/Patient/%s" % patient_id, headers=headers)
+	return bio.json()
+
+def pullFIHRPatientAllergens(patient_id):
+	allergen = requests.get("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/AllergyIntolerance?patient=%s" % patient_id, headers=headers)
+	return allergen.json()
+
+def pullFIHRMedication(patient_id):
+	medications = requests.get("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/MedicationPrescription?patient=%s&status=active" % patient_id, headers=headers)
+	return medications.json()
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    #testbio = pullFIHRPatientBio("TSvxrNacr7Cv7KQXd2Y8lFXnKQyRbVPmWyfDobtXFBOsB")
+    #print testbio
+    app.run(debug=True,host='0.0.0.0',port=80)
