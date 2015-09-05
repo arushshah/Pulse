@@ -3,21 +3,25 @@ from flask import Flask, render_template, redirect, request
 from bson.objectid import ObjectId
 from passlib.hash import bcrypt
 from pymongo import MongoClient
-#from xml.etree import ElementTree
 
-import json
 import pymongo
+import datetime
 import requests
+import json
 
 app = Flask(__name__)
+app.secret_key = 'secret'
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 client = MongoClient()
 db = client.test_db
-
 users = db.users
+
+fhir_ids = ['TSvxrNacr7Cv7KQXd2Y8lFXnKQyRbVPmWyfDobtXFBOsB', 'TU95.eyqsbwjl8jN1XdGRg5xeC6VpHyjhlJIAmBm8UcAB', 
+'TVQcsPBShQNmT2M-LjXkd9OMWMUvqtjkGLjM3qohoAyUB']
 
 headers = {'Accept' : 'application/json'}
 
@@ -54,10 +58,14 @@ def load_user(_id):
         return user
     return None
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated() and current_user.is_active():
-        return redirect('/')
+        return redirect('/dashboard')
 
     if request.method == 'POST':
         username = request.form['username'].lower()
@@ -103,6 +111,7 @@ def register():
             return render_template('register.html', error='Password verification failed.')
 
         user['password'] = hashPassword(request.form['password'])
+        user['patients'] = []
         users.insert(user)
         
         return redirect('/login')
@@ -112,22 +121,97 @@ def register():
 def hashPassword(password):
     return bcrypt.encrypt(password)
 
+@app.route('/add_symptoms')
+def add_symptoms():
+    return render_template('add_symptoms.html')
+
+#View/edit details of a patient
+@app.route('/view_patient/<patient_index>', methods=['GET', 'POST'])
+def view_patient(patient_index):
+    user_id = current_user.get_id()
+    user = users.find_one({'_id': user_id})
+    patient = user['patients'][patient_index]
+
+    if request.method == 'POST':
+        dob = str(request.form['dob'])[:10].split("-")
+        dob_str = int(dob[1]) + '/' + int(dob[2]) + '/' + int(dob[0])
+        start = datetime.date(int(dob[0]), int(dob[1]), int(dob[2]))
+
+        age = 2015 - start.year
+        if start.month < 9:
+            age += 1
+
+        users.update_one({'_id': ObjectId(user_id)}, {'$set': {'patients.' + str(patient_index): {'name': request.form['name'],
+            'gender': request.form['gender'], 'dob': dob_str, 'age': age, 'address': request.form['address'],
+            'phone': request.form['phone']}}})
+
+        return redirect('/view_patient/' + str(patient_index))
+
+    return render_template('view_patient.html', name=patient['name'], gender=patient['gender'], dob=patient['dob'],
+        age=patient['age'], address=patient['address'], phone=patient['phone'], email=patient['email'])
+
+#Doctor can view all patients and choose to add/delete
+@app.route('/dashboard')
+def dashboard():
+    user_id = current_user.get_id()
+    user = users.find_one({'_id': ObjectId(user_id)})
+
+    patients = []
+    for patient in user['patients']:
+        patients.append(patient)
+
+    for fhir_id in fhir_ids:
+        patient = {}
+        bio = pullFIHRPatientBio(fhir_id)
+        patient['name'] = bio['name'][0]['given'][0] + ' ' + bio['name'][0]['family'][0]
+        patient['gender'] = bio['gender']
+        date_arr = str(bio['birthDate'])[:10].split('-')
+
+        patient['age'] = find_age(date_arr)
+        patient['dob'] = int(date_arr[1]) + '/' + int(date_arr[2]) + '/' + int(date_arr[0])
+        patient['address'] = bio['address'][0]['line'][0] + ', ' + patient['address'][0]['city'] + ', ' + patient['address'][0]['state']
+        patient['phone'] = bio['telecom'][0]['value']
+
+        allergens = pullFIHRPatientAllergens(fhir_id)
+        if allergens['total'] > 0:
+            patient['allergens'] = []
+            for info in allergens['entry']:
+                patient['allergens'].append(info['resource']['AllergyIntolerance']['substance']['text'])
+
+        meds = pullFIHRMedication(fhir_id)
+        if meds['total'] > 0:
+            patient['meds'] = []
+            for info in meds['entry']:
+                patient['meds'].append(info['resource']['MedicationPrescription']['medication']['display'])
+
+        patients.append(patient)
+
+    return render_template('dashboard.html', last_name=user['last_name'], patients=patients)
+
 def pullFIHRPatientBio(patient_id):
-	bio = requests.get("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/Patient/%s" % patient_id, headers=headers)
-	return bio.json()
+    bio = requests.get("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/Patient/%s" % patient_id, headers=headers)
+    print(bio.json())
+    return bio.json()
 
 def pullFIHRPatientAllergens(patient_id):
-	allergen = requests.get("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/AllergyIntolerance?patient=%s" % patient_id, headers=headers)
-	return allergen.json()
+    allergen = requests.get("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/AllergyIntolerance?patient=%s" % patient_id, headers=headers)
+    return json.loads(allergen)
 
 def pullFIHRMedication(patient_id):
-	medications = requests.get("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/MedicationPrescription?patient=%s&status=active" % patient_id, headers=headers)
-	return medications.json()
+    medications = requests.get("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/MedicationPrescription?patient=%s&status=active" % patient_id, headers=headers)
+    return json.loads(medications)
+
+def find_age(array):
+    start = datetime.date(int(array[0]), int(array[1]), int(array[2]))
+
+    age = 2015 - start.year
+    if start.month < 9:
+        age += 1
+
+    return age
 
 def getWatsonTreatment(condition_name):
 	pass
 
 if __name__ == '__main__':
-    #testbio = pullFIHRPatientBio("TSvxrNacr7Cv7KQXd2Y8lFXnKQyRbVPmWyfDobtXFBOsB")
-    #print testbio
-    app.run(debug=True,host='0.0.0.0',port=80)
+    app.run(debug=True)
