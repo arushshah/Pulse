@@ -211,7 +211,16 @@ def find_age(array):
     return age
 
 def getWatsonTreatment(condition_name):
-	pass
+    question = "How to treat %s" % condition_name
+    url = "https://gateway.watsonplatform.net/question-and-answer-beta/api/v1/question/healthcare"
+    r = requests.post(url,
+        data=json.dumps({"question": {"questionText": question, "evidenceRequest": {"items": 1}}}),
+        headers={"Content-Type": "application/json", "X-SyncTimeout": 30},
+        auth=("a22986ff-f437-42f4-a210-3804023208e3", "skyZSd3GAf9p"))
+
+    return json.loads(r.text)[0]['question']['evidencelist'][0]['text']
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    treatment = getWatsonTreatment('diabetes')
+    print treatment
+    app.run(debug=True, host='0.0.0.0', port=80)
