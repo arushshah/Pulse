@@ -1,17 +1,10 @@
-#title {
-    font-family: "Quicksand", sans-serif;
-    text-align: center;
-    font-size: 400%;
-    margin-top: 3%;
-}
-
 body {
     margin:0; padding:0;
 }
 
 html, body, #bg {
     height:100%;
-    width:100%; 
+    width:100%;
 }
 #bg {
     background-size: cover;
@@ -22,8 +15,7 @@ html, body, #bg {
     top:0;
     z-index:-1;
     opacity: .55;
-    -webkit-filter: blur(2px);
-
+    -webkit-filter: blur(5px);
 }
 
 .center {
@@ -36,7 +28,7 @@ html, body, #bg {
     padding-bottom: 20px;
     padding-right: 80px;
     padding-left: 80px;
-    background-color: chartreuse;
+    background-color: #2ecc71;
     border-radius: 5px;
     border: none;
     margin-right: 5%;
@@ -50,7 +42,7 @@ html, body, #bg {
     padding-bottom: 20px;
     padding-right: 80px;
     padding-left: 80px;
-    background-color:darkorange;
+    background-color:#2980b9;
     border-radius: 5px;
     font-family: "PT Sans", sans-serif;
     font-size: 30px;
@@ -94,18 +86,14 @@ html, body, #bg {
 }
 .form-signin input[type="password"]
 {
-    margin-bottom: 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
 .account-wall
 {
     margin-top: 20px;
-    padding: 40px 0px 20px 0px;
+    padding: 20px 0px 0px 0px;
     background-color: #f7f7f7;
-    -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
 }
 .login-title
 {
@@ -132,4 +120,37 @@ html, body, #bg {
 {
     display: block;
     margin-top: 10px;
+}
+
+button {
+    color: black;
+}
+
+.login-section, .account-wall {
+    background-color: #ecf0f1;
+}
+
+.login-section {
+    border: 2px solid;
+    border-radius: 5px;
+}
+
+.container-fluid .title {
+    font-family: "Quicksand", sans-serif;
+    text-align: center;
+}
+
+.home {
+    padding-bottom: 100px;
+    background-color: #ecf0f1;
+    border-radius: 10px;
+    border: 2px solid;
+}
+
+body {
+    margin-top: 100px;
+}
+
+input {
+    margin-bottom: 10px;
 }

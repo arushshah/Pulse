@@ -20,8 +20,7 @@ client = MongoClient()
 db = client.test_db
 users = db.users
 
-fhir_ids = ['TSvxrNacr7Cv7KQXd2Y8lFXnKQyRbVPmWyfDobtXFBOsB', 'TU95.eyqsbwjl8jN1XdGRg5xeC6VpHyjhlJIAmBm8UcAB', 
-'TVQcsPBShQNmT2M-LjXkd9OMWMUvqtjkGLjM3qohoAyUB']
+fhir_ids = ['TSvxrNacr7Cv7KQXd2Y8lFXnKQyRbVPmWyfDobtXFBOsB', 'TVQcsPBShQNmT2M-LjXkd9OMWMUvqtjkGLjM3qohoAyUB', 'TU95.eyqsbwjl8jN1XdGRg5xeC6VpHyjhlJIAmBm8UcAB']
 
 headers = {'Accept' : 'application/json'}
 
@@ -60,6 +59,9 @@ def load_user(_id):
 
 @app.route('/')
 def index():
+    if current_user.is_authenticated() and current_user.is_active():
+        return redirect('/dashboard')
+
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -148,7 +150,41 @@ def view_patient(patient_index):
         return redirect('/view_patient/' + str(patient_index))
 
     return render_template('view_patient.html', name=patient['name'], gender=patient['gender'], dob=patient['dob'],
-        age=patient['age'], address=patient['address'], phone=patient['phone'], email=patient['email'])
+        age=patient['age'], address=patient['address'], phone=patient['phone'])
+
+#View/edit details of a patient
+@app.route('/view_fhir_patient/<fhir_index>', methods=['GET', 'POST'])
+def view_fhir_patient(fhir_index):
+    user_id = current_user.get_id()
+    user = users.find_one({'_id': user_id})
+
+    bio = pullFIHRPatientBio(fhir_id)
+    name = bio['name'][0]['given'][0] + ' ' + bio['name'][0]['family'][0]
+    gender = bio['gender']
+    date_arr = str(bio['birthDate'])[:10].split('-')
+    age = find_age(date_arr)
+    dob = str(int(date_arr[1])) + '/' + str(int(date_arr[2])) + '/' + str(int(date_arr[0]))
+    address = bio['address'][0]['line'][0] + ', ' + bio['address'][0]['city'] + ', ' + bio['address'][0]['state']
+    phone = bio['telecom'][0]['value']
+    isFhir = True
+
+    allergenInfo = pullFIHRPatientAllergens(fhir_id)
+    try:
+        if allergens != 0:
+            patient['allergens'] = []
+            for i in range(len(allergens['entry'])):
+                patient['allergens'].append(allergens['entry'][i]['resource']['AllergyIntolerance']['substance']['text'])
+
+        meds = pullFIHRMedication(fhir_id)
+        if meds != 0:
+            patient['meds'] = []
+            for info in meds['entry']:
+                patient['meds'].append(info['resource']['MedicationPrescription']['medication']['display'])
+    except:
+        pass
+
+    return render_template('view_fhir_patient.html', name=name, gender=gender, dob=dob, age=age, address=address, 
+        phone=phone)
 
 #Doctor can view all patients and choose to add/delete
 @app.route('/dashboard')
@@ -168,38 +204,63 @@ def dashboard():
         date_arr = str(bio['birthDate'])[:10].split('-')
 
         patient['age'] = find_age(date_arr)
-        patient['dob'] = int(date_arr[1]) + '/' + int(date_arr[2]) + '/' + int(date_arr[0])
-        patient['address'] = bio['address'][0]['line'][0] + ', ' + patient['address'][0]['city'] + ', ' + patient['address'][0]['state']
+        patient['dob'] = str(int(date_arr[1])) + '/' + str(int(date_arr[2])) + '/' + str(int(date_arr[0]))
+        patient['address'] = bio['address'][0]['line'][0] + ', ' + bio['address'][0]['city'] + ', ' + bio['address'][0]['state']
         patient['phone'] = bio['telecom'][0]['value']
+        patient['isFhir'] = True
+        patient['fhir_id'] = fhir_id
 
-        allergens = pullFIHRPatientAllergens(fhir_id)
-        if allergens['total'] > 0:
-            patient['allergens'] = []
-            for info in allergens['entry']:
-                patient['allergens'].append(info['resource']['AllergyIntolerance']['substance']['text'])
+        allergenInfo = pullFIHRPatientAllergens(fhir_id)
+        try:
+            if allergens != 0:
+                patient['allergens'] = []
+                for i in range(len(allergens['entry'])):
+                    patient['allergens'].append(allergens['entry'][i]['resource']['AllergyIntolerance']['substance']['text'])
 
-        meds = pullFIHRMedication(fhir_id)
-        if meds['total'] > 0:
-            patient['meds'] = []
-            for info in meds['entry']:
-                patient['meds'].append(info['resource']['MedicationPrescription']['medication']['display'])
+            meds = pullFIHRMedication(fhir_id)
+            if meds != 0:
+                patient['meds'] = []
+                for info in meds['entry']:
+                    patient['meds'].append(info['resource']['MedicationPrescription']['medication']['display'])
+        except:
+            pass
 
         patients.append(patient)
+    print(patients)
 
     return render_template('dashboard.html', last_name=user['last_name'], patients=patients)
 
+@app.route('/add_patient', methods=['GET', 'POST'])
+def add_patient():
+    if request.method == 'POST':
+        users.update_one({'_id': ObjectId(user_id)}, {'$push': {'patients': {'name': request.form['name'],
+            'gender': request.form['gender'], 'dob': dob_str, 'age': age, 'address': request.form['address'],
+            'phone': request.form['phone'], 'isFhir': False}}})
+        return redirect('/dashboard')
+
+    return render_template('add_patient.html')
+
 def pullFIHRPatientBio(patient_id):
     bio = requests.get("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/Patient/%s" % patient_id, headers=headers)
-    print(bio.json())
-    return bio.json()
+    return json.loads(bio.text)
 
 def pullFIHRPatientAllergens(patient_id):
-    allergen = requests.get("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/AllergyIntolerance?patient=%s" % patient_id, headers=headers)
-    return json.loads(allergen)
+    allergens = requests.get("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/AllergyIntolerance?patient=%s" % patient_id, headers=headers)
+    #try:
+     #   if allergens.json() is not None:
+    return json.loads(allergens.text)
+
+    #except:
+     #   return 0
 
 def pullFIHRMedication(patient_id):
     medications = requests.get("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/MedicationPrescription?patient=%s&status=active" % patient_id, headers=headers)
-    return json.loads(medications)
+    try:
+        if medications.json() is not None:
+            return json.loads(medications.text)
+
+    except:
+        return 0
 
 def find_age(array):
     start = datetime.date(int(array[0]), int(array[1]), int(array[2]))
