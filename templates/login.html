@@ -7,6 +7,7 @@
     </head>
     
     <body>
+        <img id="bg" src="http://www.cdc.gov/stroke/images/medical_conditions.jpg">
         <div class="container">
             <div class="row">
                 <div class="col-md-3"></div>
@@ -14,7 +15,7 @@
                     {% if error %}
                         <h2>{{ error }}</h2>
                     {% endif %}
-                    <h1 class="text-center login-title">Sign in to continue to Pulse</h1>
+                    <h1 class="text-center login-title">Log Into Pulse</h1>
                     <div class="account-wall">
                         <form class="form-signin" method="post">
                             <input name="username" type="text" class="form-control" placeholder="Username" required autofocus>
@@ -22,7 +23,7 @@
                             <button style="margin-top: 10px" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
                         </form>
                     </div>
-                    <h5 class="text-center">Don't have an account? <a href="/register" class="text-center new-account">Create one.</a></h5>
+                    <h5 class="text-center">Don't have an account? <a href="/register" class="text-center new-account">Create One</a></h5>
                 </div>
                 <div class="col-md-3"></div>
             </div>
