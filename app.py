@@ -124,6 +124,9 @@ def pullFIHRMedication(patient_id):
 	medications = requests.get("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/MedicationPrescription?patient=%s&status=active" % patient_id, headers=headers)
 	return medications.json()
 
+def getWatsonTreatment(condition_name):
+	pass
+
 if __name__ == '__main__':
     #testbio = pullFIHRPatientBio("TSvxrNacr7Cv7KQXd2Y8lFXnKQyRbVPmWyfDobtXFBOsB")
     #print testbio
