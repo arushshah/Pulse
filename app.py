@@ -121,8 +121,8 @@ def register():
 def hashPassword(password):
     return bcrypt.encrypt(password)
 
-@app.route('/add_symptoms')
-def add_symptoms():
+@app.route('/add_symptoms/<fhir_id>', methods=['GET', 'POST'])
+def add_symptoms(fhir_id):
     return render_template('add_symptoms.html')
 
 #View/edit details of a patient
@@ -182,7 +182,7 @@ def view_fhir_patient(fhir_id):
         pass
 
     return render_template('view_fhir_patient.html', name=name, gender=gender, dob=dob, age=age, address=address, 
-        phone=phone)
+        phone=phone, fhir_id=fhir_id)
 
 #Doctor can view all patients and choose to add/delete
 @app.route('/dashboard')
@@ -269,8 +269,17 @@ def find_age(array):
 
     return age
 
-def getWatsonExplanation(condition_name):
-    question = "how to treat %s" % condition_name
+def verifyDisease(disease):
+    question = "symptoms of %s" % disease
+    url = "https://gateway.watsonplatform.net/question-and-answer-beta/api/v1/question/healthcare"
+    r = requests.post(url,
+        data=json.dumps({"question": {"questionText": question, "evidenceRequest": {"items": 1}}}),
+        headers={"Content-Type": "application/json", "X-SyncTimeout": 30},
+        auth=("a22986ff-f437-42f4-a210-3804023208e3", "skyZSd3GAf9p"))
+    print(json.loads(r.text)[0]['question']['evidencelist'][0]['text'])
+
+def getTreatment(disease):
+    question = "how to treat %s" % disease
     url = "https://gateway.watsonplatform.net/question-and-answer-beta/api/v1/question/healthcare"
     r = requests.post(url,
         data=json.dumps({"question": {"questionText": question, "evidenceRequest": {"items": 1}}}),
