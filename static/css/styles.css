@@ -153,4 +153,9 @@ body {
 
 input {
     margin-bottom: 10px;
+    width: 100%;
+}
+
+.listed-patient {
+    text-align: center;
 }

@@ -59,15 +59,13 @@ def load_user(_id):
 
 @app.route('/')
 def index():
-    if current_user.is_authenticated() and current_user.is_active():
-        return redirect('/dashboard')
+    
 
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated() and current_user.is_active():
-        return redirect('/dashboard')
+    
 
     if request.method == 'POST':
         username = request.form['username'].lower()
@@ -278,7 +276,7 @@ def getWatsonExplanation(condition_name):
         data=json.dumps({"question": {"questionText": question, "evidenceRequest": {"items": 1}}}),
         headers={"Content-Type": "application/json", "X-SyncTimeout": 30},
         auth=("a22986ff-f437-42f4-a210-3804023208e3", "skyZSd3GAf9p"))
-    print json.loads(r.text)[0]['question']['evidencelist'][0]['text']	
+    print(json.loads(r.text)[0]['question']['evidencelist'][0]['text'])
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0',port=80)

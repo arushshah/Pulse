@@ -77,14 +77,16 @@
         {% for i in range(patients|length) %}
             <div class="row">
                 {% if patients[i]['isFhir'] %}
-                    <a href="/view_fhir_patient/{{ patients[i]['fhir_id'] }}">{{ patients[i]['name'] }}</a>
+                <h3 class="listed-patient"><a class="listed-patient" href="/view_fhir_patient/{{ patients[i]['fhir_id'] }}">{{ patients[i]['name'] }}</a></h3>
                 {% else %}
-                    <a href="/view_patient/{{ i }}">{{ patients[i]['name'] }}</a>
+                <h3 class="class=listed-patient"><a class="listed-patient" href="/view_patient/{{ i }}">{{ patients[i]['name'] }}</a></h3>
                 {% endif %}
             </div>
         {% endfor %}
         
+        <div class="text-center">
         <a href="/add_patient"><button class="text-center" style="margin-left:-1.5%;background-color:#2980b9; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right:20px; border-radius: 10px; font-size: 20px; color: white">Add New Patient</button></a>
+        </div>
 
         <hr>
 
