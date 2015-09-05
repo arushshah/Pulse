@@ -153,8 +153,8 @@ def view_patient(patient_index):
         age=patient['age'], address=patient['address'], phone=patient['phone'])
 
 #View/edit details of a patient
-@app.route('/view_fhir_patient/<fhir_index>', methods=['GET', 'POST'])
-def view_fhir_patient(fhir_index):
+@app.route('/view_fhir_patient/<fhir_id>', methods=['GET', 'POST'])
+def view_fhir_patient(fhir_id):
     user_id = current_user.get_id()
     user = users.find_one({'_id': user_id})
 
@@ -271,17 +271,5 @@ def find_age(array):
 
     return age
 
-def getWatsonTreatment(condition_name):
-    question = "How to treat %s" % condition_name
-    url = "https://gateway.watsonplatform.net/question-and-answer-beta/api/v1/question/healthcare"
-    r = requests.post(url,
-        data=json.dumps({"question": {"questionText": question, "evidenceRequest": {"items": 1}}}),
-        headers={"Content-Type": "application/json", "X-SyncTimeout": 30},
-        auth=("a22986ff-f437-42f4-a210-3804023208e3", "skyZSd3GAf9p"))
-
-    return json.loads(r.text)[0]['question']['evidencelist'][0]['text']
-
 if __name__ == '__main__':
-    treatment = getWatsonTreatment('diabetes')
-    print treatment
-    app.run(debug=True, host='0.0.0.0', port=80)
+    app.run(debug=True)
