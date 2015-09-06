@@ -306,7 +306,7 @@ def verifyDisease(disease):
         headers={"Content-Type": "application/json", "X-SyncTimeout": 30},
         auth=("a22986ff-f437-42f4-a210-3804023208e3", "skyZSd3GAf9p"))
 
-    return(json.loads(r.text)[0]['question']['evidencelist'][0]['text'])
+    return(json.loads(r.text)[0]['question']['evidencelist'][1]['text'])
 
 def getTreatment(disease):
     question = "how to treat %s" % disease
