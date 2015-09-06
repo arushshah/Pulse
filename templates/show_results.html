@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
     <head>
+
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="">
         <meta name="author" content="">
         <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
         <link rel = "stylesheet" type = "text/css" href="/static/css/col-portfolio.css">
-        <link rel = "stylesheet" type = "text/css" href="/static/css/styles.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     </head>
-    
+
     <body>
+
         <!-- Navigation -->
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <div class="container">
@@ -24,7 +29,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="#">Dashboard</a>
+                    <a class="navbar-brand" href="/dashboard">Dashboard</a>
                 </div>
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -40,44 +45,43 @@
                         </li>
                     </ul>
                 </div>
-                <!-- /.navbar-collapse -->
             </div>
-            <!-- /.container -->
         </nav>
 
         <br>
         <!-- Page Content -->
         <div class="container">
-        <div class="row">
-                
-            <h1 style="text-align: center; font-size: 350%">{{ name }}</h1>
-            <div class="col-md-1"></div>
-            <div class="col-md-5 card">
-                <h1 style="text-align: center; font-size: 350%">Information</h1>
-                <div class="row">
-                    <h3><b>Name: </b>{{ name }}</h3>
-                    <h3><b>Gender: </b>{{ gender }}</h3>
-                    <h3><b>Date of Birth: </b>{{ dob }}</h3>
-                    <h3><b>Age: </b>{{ age }}</h3>
-                    <h3><b>Address: </b>{{ address }}</h3>
-                    <h3><b>Phone: </b>{{ phone }}</h3>
+            <h1 class="page-header">Treatment for {{ patient['name'] }}</h1>
+            <div class="col-md-4">
+                <h2>Symptoms You Entered</h2>
+                <ul>
+                    {% for symptom in symptoms %}
+                        <li><h3>{{ symptom }}</h3></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="col-md-4">
+                <h2>You Thought the Condition was: {{ disease }}</h2>
+                <h3><b>Common symptoms of {{ disease }}:</b></h3>
+                <p>{{ possible_symptoms }}</p>
+            </div>
+            
+            <div class="col-md-4">
+                <h2>Possible Treatment</h2>
+                <p>{{ solution }}</p>
+            </div>
+            
+            <form method="POST">
+                <input type="hidden" name="add_medication" value="yes">
+                <input type="hidden" name="index" value="{{ index }}">
+                <input type="hidden" name="medication" value="{{ disease }} Treatment">
+            
+                <div class="text-center">
+                    <button id="submitButton" type="submit" class="btn btn-submit btn-lg btn-lg text-center">Add Condition to {{ patient['name'] }}'s Medication Schedule</button>
+                    <a href="/add_condition/{{ index }}"><button id="submitButton" type="button" class="btn btn-submit btn-lg btn-lg text-center">Return to Search</button></a>
                 </div>
-            </div>
-            <div class="col-md-5 card">
-                <h1 style="text-align: center; font-size: 350%">Allergies</h1>
-                <ul>
-                {% for allergy in allergies %}
-                    <li><h4>{{ allergy }}</h4></li>
-                    {% endfor %}
-                </ul>
-                
-                <h1 style="text-align: center; font-size: 350%">Medications</h1>
-                <ul>
-                {% for med in meds %}
-                    <li><h4>{{ med }}</h4></li>
-                    {% endfor %}
-                </ul>
-            </div>
+            </form>
         </div>
     </body>
 </html>

@@ -41,7 +41,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Start Bootstrap</a>
+                <a class="navbar-brand" href="/dashboard">Start Bootstrap</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -77,9 +77,9 @@
         {% for i in range(patients|length) %}
             <div class="row">
                 {% if patients[i]['isFhir'] %}
-                <h3 class="listed-patient"><a class="listed-patient" href="/view_fhir_patient/{{ patients[i]['fhir_id'] }}">{{ patients[i]['name'] }}</a></h3>
+                <h3 class="listed-patient"><a href="/view_fhir_patient/{{ patients[i]['fhir_id'] }}">{{ patients[i]['name'] }}</a></h3>
                 {% else %}
-                <h3 class="class=listed-patient"><a class="listed-patient" href="/view_patient/{{ i }}">{{ patients[i]['name'] }}</a></h3>
+                <h3 class="listed-patient"><a href="/view_patient/{{ i }}">{{ patients[i]['name'] }}</a></h3>
                 {% endif %}
             </div>
         {% endfor %}

@@ -125,32 +125,54 @@ def hashPassword(password):
 def add_symptoms(fhir_id):
     return render_template('add_symptoms.html')
 
-#View/edit details of a patient
+@app.route('/add_condition/<patient_index>', methods=['GET', 'POST'])
+def add_condition(patient_index):
+    user_id = current_user.get_id()
+    user = users.find_one({'_id': ObjectId(user_id)})
+    patient = user['patients'][int(patient_index)]
+
+    if request.method == 'POST':
+        symptoms = request.form['symptoms'].split(",")
+        
+        disease = request.form['disease']
+
+        possible_symptoms = verifyDisease(disease)
+        solution = getTreatment(disease)
+        print(solution)
+        return render_template('show_results.html', disease=disease, index=patient_index, symptoms=symptoms, possible_symptoms=possible_symptoms, solution=solution, patient=patient)
+
+    return render_template('add_condition.html', patient=patient)
+
+@app.route('/show_results', methods=['GET', 'POST'])
+def show_results():
+    if request.method == 'POST':
+        if request.form['add_medication'] == 'yes':
+            user_id = current_user.get_id()
+            user = users.find_one({'_id': ObjectId(user_id)})
+            patient = user['patients'][int(request.form['index'])]
+
+            users.update_one({'_id': ObjectId(user_id)}, {'$push': {'patients.' + str(request.form['index']) + '.medications': {request.form['medication']}}})
+
+    return render_template('show_results.html')
+
+#View/edit details of a patient from Mongo
 @app.route('/view_patient/<patient_index>', methods=['GET', 'POST'])
 def view_patient(patient_index):
     user_id = current_user.get_id()
-    user = users.find_one({'_id': user_id})
-    patient = user['patients'][patient_index]
+    user = users.find_one({'_id': ObjectId(user_id)})
+    patient = user['patients'][int(patient_index)]
 
     if request.method == 'POST':
-        dob = str(request.form['dob'])[:10].split("-")
-        dob_str = int(dob[1]) + '/' + int(dob[2]) + '/' + int(dob[0])
-        start = datetime.date(int(dob[0]), int(dob[1]), int(dob[2]))
-
-        age = 2015 - start.year
-        if start.month < 9:
-            age += 1
-
         users.update_one({'_id': ObjectId(user_id)}, {'$set': {'patients.' + str(patient_index): {'name': request.form['name'],
-            'gender': request.form['gender'], 'dob': dob_str, 'age': age, 'address': request.form['address'],
+            'gender': request.form['gender'], 'dob': request.form['dob'], 'age': request.form['age'], 'address': request.form['address'],
             'phone': request.form['phone']}}})
 
-        return redirect('/view_patient/' + str(patient_index))
+        return redirect('/dashboard')
 
     return render_template('view_patient.html', name=patient['name'], gender=patient['gender'], dob=patient['dob'],
-        age=patient['age'], address=patient['address'], phone=patient['phone'])
+        age=patient['age'], address=patient['address'], phone=patient['phone'], i=patient_index)
 
-#View/edit details of a patient
+#View details of a patient from Epic's Fhir API
 @app.route('/view_fhir_patient/<fhir_id>', methods=['GET', 'POST'])
 def view_fhir_patient(fhir_id):
     user_id = current_user.get_id()
@@ -230,10 +252,17 @@ def dashboard():
 
 @app.route('/add_patient', methods=['GET', 'POST'])
 def add_patient():
+    user_id = current_user.get_id()
+    user = users.find_one({'_id': ObjectId(user_id)})
+
     if request.method == 'POST':
+        allergens = [request.form['allergen']]
+        medications = [request.form['medication']]
+
         users.update_one({'_id': ObjectId(user_id)}, {'$push': {'patients': {'name': request.form['name'],
-            'gender': request.form['gender'], 'dob': dob_str, 'age': age, 'address': request.form['address'],
-            'phone': request.form['phone'], 'isFhir': False}}})
+            'gender': request.form['gender'], 'dob': request.form['dob'], 'age': request.form['age'], 
+            'address': request.form['address'], 'phone': request.form['phone'], 'isFhir': False,
+            'allergens': allergens, 'medications': medications}}})
         return redirect('/dashboard')
 
     return render_template('add_patient.html')
@@ -276,7 +305,8 @@ def verifyDisease(disease):
         data=json.dumps({"question": {"questionText": question, "evidenceRequest": {"items": 1}}}),
         headers={"Content-Type": "application/json", "X-SyncTimeout": 30},
         auth=("a22986ff-f437-42f4-a210-3804023208e3", "skyZSd3GAf9p"))
-    print(json.loads(r.text)[0]['question']['evidencelist'][0]['text'])
+
+    return(json.loads(r.text)[0]['question']['evidencelist'][0]['text'])
 
 def getTreatment(disease):
     question = "how to treat %s" % disease
@@ -285,7 +315,9 @@ def getTreatment(disease):
         data=json.dumps({"question": {"questionText": question, "evidenceRequest": {"items": 1}}}),
         headers={"Content-Type": "application/json", "X-SyncTimeout": 30},
         auth=("a22986ff-f437-42f4-a210-3804023208e3", "skyZSd3GAf9p"))
-    print(json.loads(r.text)[0]['question']['evidencelist'][0]['text'])
+    
+    return(json.loads(r.text)[0]['question']['evidencelist'][0]['text'])
 
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0',port=80)
+    #app.run(debug=True,host='0.0.0.0',port=80)
+    app.run(debug=True)
