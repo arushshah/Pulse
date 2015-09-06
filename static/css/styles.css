@@ -164,6 +164,10 @@ button {
     border: 2px solid;
 }
 
+.lab_val {
+    font-size: 17px;
+}
+
 body {
     margin-top: 100px;
 }
@@ -171,6 +175,10 @@ body {
 input {
     margin-bottom: 10px;
     width: 100%;
+}
+
+.tall_input {
+    height: 35px;
 }
 
 .listed-patient {
@@ -188,4 +196,12 @@ input {
 
 .page-header {
     text-align: center;
+}
+#faded_line{ 
+    display:block;
+    border:none;
+    color:white;
+    height:1px;
+    background:black;
+    background: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 350, from(#000000), to(#FFFFFF));
 }
