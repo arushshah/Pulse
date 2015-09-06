@@ -8,10 +8,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="">
         <meta name="author" content="">
-        <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
         <link rel = "stylesheet" type = "text/css" href="/static/css/col-portfolio.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     </head>
@@ -35,13 +35,10 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
                         <li>
-                            <a href="#">About</a>
+                            <a href="/add_patient">Add Patient</a>
                         </li>
                         <li>
-                            <a href="#">Services</a>
-                        </li>
-                        <li>
-                            <a href="#">Contact</a>
+                            <a href="/logout">Log Out</a>
                         </li>
                     </ul>
                 </div>
@@ -51,7 +48,7 @@
         <br>
         <!-- Page Content -->
         <div class="container">
-            <h1 class="page-header">Treatment for {{ patient['name'] }}</h1>
+            <h1 style="text-align: center" class="page-header">Treatment for <b><u>{{ patient['name'] }}</u></b></h1>
             <div class="col-md-4">
                 <h2>Symptoms You Entered</h2>
                 <ul>

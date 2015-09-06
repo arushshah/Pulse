@@ -6,13 +6,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="">
         <meta name="author" content="">
-        <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
         <link rel = "stylesheet" type = "text/css" href="/static/css/col-portfolio.css">
         <link rel = "stylesheet" type = "text/css" href="/static/css/styles.css">
+        <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
     </head>
     
-    <body>
+    <body style="background-color:#d2d2d2">
         <!-- Navigation -->
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <div class="container">
@@ -24,19 +24,16 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="#">Dashboard</a>
+                    <a class="navbar-brand" href="/dashboard">Dashboard</a>
                 </div>
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
                         <li>
-                            <a href="#">About</a>
+                            <a href="/add_patient">Add Patient</a>
                         </li>
                         <li>
-                            <a href="#">Services</a>
-                        </li>
-                        <li>
-                            <a href="#">Contact</a>
+                            <a href="/logout">Log Out</a>
                         </li>
                     </ul>
                 </div>
@@ -51,9 +48,10 @@
         <div class="row">
                 
             <h1 style="text-align: center; font-size: 350%">{{ name }}</h1>
-            <div class="col-md-1"></div>
-            <div class="col-md-5 card">
-                <h1 style="text-align: center; font-size: 350%">Information</h1>
+            <br>
+            
+            <div class="col-md-5" style="background-color: white; box-shadow: 3px 3px 3px 1px gray; padding: 50px 50px 20px 50px">
+                <h1 style="text-align: center; font-size: 250%">Information</h1>
                 <div class="row">
                     <h3><b>Name: </b>{{ name }}</h3>
                     <h3><b>Gender: </b>{{ gender }}</h3>
@@ -63,19 +61,28 @@
                     <h3><b>Phone: </b>{{ phone }}</h3>
                 </div>
             </div>
-            <div class="col-md-5 card">
-                <h1 style="text-align: center; font-size: 350%">Allergies</h1>
+            <div class="col-md-1"></div>
+            <div class="col-md-6" style="background-color: white; box-shadow: 3px 3px 3px 1px gray; padding: 20px 20px 20px 20px">
+                <h1 style="text-align: center; font-size: 250%">Allergens</h1>
                 <ul>
-                {% for allergy in allergies %}
-                    <li><h4>{{ allergy }}</h4></li>
+                {% if allergens|length == 0 %}
+                    <h3 style="text-align: center; padding-right: 20px"><b>None</b></h3>
+                {% else %}
+                    {% for allergen in allergens %}
+                        <li><h4>{{ allergen }}</h4></li>
                     {% endfor %}
+                {% endif %}
                 </ul>
                 
-                <h1 style="text-align: center; font-size: 350%">Medications</h1>
+                <h1 style="text-align: center; font-size: 250%">Medications</h1>
                 <ul>
-                {% for med in meds %}
-                    <li><h4>{{ med }}</h4></li>
+                {% if meds|length == 0 %}
+                    <h3 style="text-align: center; padding-right: 20px"><b>None</b></h3>
+                {% else %}
+                    {% for med in meds %}
+                        <li><h4>{{ med }}</h4></li>
                     {% endfor %}
+                {% endif %}
                 </ul>
             </div>
         </div>

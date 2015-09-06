@@ -169,7 +169,7 @@ button {
 }
 
 body {
-    margin-top: 100px;
+    margin-top: 30px;
 }
 
 input {
@@ -185,18 +185,10 @@ input {
     text-align: center;
 }
 
-.card {
-    background-color: #eeeeee;
-    padding-left: 50px;
-    border: 2px solid;
-    border-radius: 10px;
-    margin-left: 10px;
-    margin-right: 10px;
-}
-
 .page-header {
     text-align: center;
 }
+
 #faded_line{ 
     display:block;
     border:none;
@@ -204,4 +196,8 @@ input {
     height:1px;
     background:black;
     background: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 350, from(#000000), to(#FFFFFF));
+}
+
+body, h1, h2, h3, h4, div, h5, h6, label, p, .container {
+    font-family: 'PT Sans', sans-serif;
 }

@@ -1,5 +1,5 @@
 from flask.ext.login import LoginManager, login_user, logout_user, current_user, login_required
-from flask import Flask, render_template, redirect, request, g
+from flask import Flask, render_template, redirect, request, g, make_response
 from bson.objectid import ObjectId
 from passlib.hash import bcrypt
 from pymongo import MongoClient
@@ -154,6 +154,7 @@ def show_results():
             patient = user['patients'][int(request.form['index'])]
 
             users.update_one({'_id': ObjectId(user_id)}, {'$push': {'patients.' + str(request.form['index']) + '.medications': {request.form['medication']}}})
+            return redirect('/dashboard')
 
     return render_template('show_results.html')
 
@@ -275,7 +276,7 @@ def add_patient():
 
     return render_template('add_patient.html')
 
-@app.route('/download_report/<patient_index>', methods=['POST'])
+@app.route('/download_report/<patient_index>', methods=['GET'])
 def download_report(patient_index):
     #g.patient_id = requests.form['patient_id']
     #generate html file, open file etc
@@ -283,10 +284,32 @@ def download_report(patient_index):
     user = users.find_one({'_id': ObjectId(user_id)})
     patient = user['patients'][int(patient_index)]
 
-    html = '<h1 style="text-align: center"></h1><br>'
+    html = '<div style="background-color: #2ecc71">'
+    html += '<h1 style="text-align: center; font-size: 250%; padding-top: 10px">' + patient['name'] + '</h1></div>'
+    html += '<h1 style="text-align: center; font-size: 210%">Medical Report</h1>'
+    html += '<h1>Gender: %s</h1>' % patient['gender']
+    html += '<h1>Date of Birth: %s</h1>' % patient['dob']
+    html += '<h1>Home Address: %s</h1>' % patient['address']
+    html += '<h1>Phone Number: %s</h1><br>' % patient['phone']
+
+    html += '<div style="background-color: #1abc9c"><h1 style="padding-top: 10px; text-align: center; font-size: 175%">Medications</h1></div><br>'
+    if (len(patient['medications']) == 0):
+        html += '<h1>None</h1>'
+
+    else:
+        for med in patient['medications']:
+            html += '<li><h1>' + med + '</h1></li>'
+
+    html += '<div style="background-color: #e74c3c"><h1 style="padding-top: 10px; text-align: center; font-size: 175%">Allergens</h1></div><br>'
+    if (len(patient['allergens']) == 0):
+        html += '<h1>None</h1>'
+
+    else:
+        for allergen in patient['allergens']:
+            html += '<li><h1>' + allergen + '</h1></li>'
 
     pdf_file = open('templates/report.html','w')
-    pdf_file.write('')
+    pdf_file.write(html)
     pdf_file.close()    
     #convert to PDF
     pdf = StringIO()
