@@ -153,8 +153,8 @@ def show_results():
             user = users.find_one({'_id': ObjectId(user_id)})
             patient = user['patients'][int(request.form['index'])]
 
-            users.update_one({'_id': ObjectId(user_id)}, {'$push': {'patients.' + str(request.form['index']) + '.medications': {request.form['medication']}}})
-            return redirect('/dashboard')
+            users.update_one({'_id': ObjectId(user_id)}, {'$push': {'patients.' + str(request.form['index']) + '.medications': request.form['medication']}})
+        return redirect('/dashboard')
 
     return render_template('show_results.html')
 
@@ -177,7 +177,7 @@ def view_patient(patient_index):
             'phone': request.form['phone']}}})
 
         doctor_id = request.form['choose-doctor']
-        users.update_one({'_id': ObjectId(user_id)}, {'$pull': {'patients': patient}})
+        users.update_one({'_id': ObjectId(user_id)}, {'$pull': {'patients': {'name': patient['name']}}})
         users.update_one({'_id': ObjectId(doctor_id)}, {'$push': {'patients': patient}})
 
         return redirect('/dashboard')
@@ -295,8 +295,8 @@ def download_report(patient_index):
     user = users.find_one({'_id': ObjectId(user_id)})
     patient = user['patients'][int(patient_index)]
 
-    html = '<div>'
-    html += '<h1 style="text-align: center; font-size: 250%; padding-top: 10px">' + patient['name'] + '</h1></div>'
+    html = '<div class="text-center">'
+    html += '<h1 style="text-align: center; font-size: 250%; padding-top: 10px">' + patient['name'] + '</h1>'
     html += '<h1 style="text-align: center; font-size: 210%">Medical Report</h1>'
     html += '<h1>Gender: %s</h1>' % patient['gender']
     html += '<h1>Date of Birth: %s</h1>' % patient['dob']
@@ -311,6 +311,8 @@ def download_report(patient_index):
     html += '<div><h1 style="padding-top: 10px; text-align: center; font-size: 175%">Allergens</h1></div><br>'
     for allergen in patient['allergens']:
         html += '<li><h1>' + allergen + '</h1></li>'
+
+    html += '</div>'
 
     pdf_file = open('templates/report.html','w')
     pdf_file.write(html)
