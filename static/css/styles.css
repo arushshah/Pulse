@@ -201,3 +201,7 @@ input {
 body, h1, h2, h3, h4, div, h5, h6, label, p, .container {
     font-family: 'PT Sans', sans-serif;
 }
+
+.navbar {
+    color: red;
+}

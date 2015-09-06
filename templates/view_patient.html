@@ -113,7 +113,12 @@
                                 <input class="tall_input" name="phone" value="{{ phone }}"></input>
                             </div>
                         </div>
-                        
+                    <br>
+    
+                    <select name="choose-doctor">{% for i in range(doctor_ids|length) %}
+                        <option value="{{ doctor_ids[i] }}">{{ doctor_names[i] }}</option>
+                        {% endfor %}
+                    </select>
     
                   <br><div class="text-center"><button style="margin-top: 10px" class="btn btn-lg btn-primary btn-lg" type="submit">Update</button></div>
             </div>

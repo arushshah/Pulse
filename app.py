@@ -165,15 +165,26 @@ def view_patient(patient_index):
     user = users.find_one({'_id': ObjectId(user_id)})
     patient = user['patients'][int(patient_index)]
 
+    doctor_ids = []
+    doctor_names = []
+    for user in users.find():
+        doctor_names.append(user['first_name'] + ' ' + user['last_name'])
+        doctor_ids.append(user['_id'])
+
     if request.method == 'POST':
         users.update_one({'_id': ObjectId(user_id)}, {'$set': {'patients.' + str(patient_index): {'name': request.form['name'],
             'gender': request.form['gender'], 'dob': request.form['dob'], 'age': request.form['age'], 'address': request.form['address'],
             'phone': request.form['phone']}}})
 
+        doctor_id = request.form['choose-doctor']
+        users.update_one({'_id': ObjectId(doctor_id)}, {'$push': {'patients': patient}})
+        users.update_one({'_id': ObjectId(user_id)}, {'$pull': {'patients': patient}})
+
         return redirect('/dashboard')
 
     return render_template('view_patient.html', name=patient['name'], gender=patient['gender'], dob=patient['dob'],
-        age=patient['age'], address=patient['address'], phone=patient['phone'], i=patient_index, patient=patient)
+        age=patient['age'], address=patient['address'], phone=patient['phone'], i=patient_index, patient=patient, doctor_ids=doctor_ids,
+        doctor_names=doctor_names)
 
 #View details of a patient from Epic's Fhir API
 @app.route('/view_fhir_patient/<fhir_id>', methods=['GET', 'POST'])
@@ -293,20 +304,13 @@ def download_report(patient_index):
     html += '<h1>Phone Number: %s</h1><br>' % patient['phone']
 
     html += '<div style="background-color: #1abc9c"><h1 style="padding-top: 10px; text-align: center; font-size: 175%">Medications</h1></div><br>'
-    if (len(patient['medications']) == 0):
-        html += '<h1>None</h1>'
-
-    else:
-        for med in patient['medications']:
-            html += '<li><h1>' + med + '</h1></li>'
+    
+    for med in patient['medications']:
+        html += '<li><h1>' + med + '</h1></li>'
 
     html += '<div style="background-color: #e74c3c"><h1 style="padding-top: 10px; text-align: center; font-size: 175%">Allergens</h1></div><br>'
-    if (len(patient['allergens']) == 0):
-        html += '<h1>None</h1>'
-
-    else:
-        for allergen in patient['allergens']:
-            html += '<li><h1>' + allergen + '</h1></li>'
+    for allergen in patient['allergens']:
+        html += '<li><h1>' + allergen + '</h1></li>'
 
     pdf_file = open('templates/report.html','w')
     pdf_file.write(html)
