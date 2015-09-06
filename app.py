@@ -189,22 +189,28 @@ def view_fhir_patient(fhir_id):
     isFhir = True
 
     allergenInfo = pullFIHRPatientAllergens(fhir_id)
+    a = []
+    medications = []
+    
     try:
         if allergens != 0:
-            patient['allergens'] = []
+            
             for i in range(len(allergens['entry'])):
-                patient['allergens'].append(allergens['entry'][i]['resource']['AllergyIntolerance']['substance']['text'])
+                a.append(allergens['entry'][i]['resource']['AllergyIntolerance']['substance']['text'])
+    except:
+        pass
 
+    try:
         meds = pullFIHRMedication(fhir_id)
         if meds != 0:
-            patient['meds'] = []
+            
             for info in meds['entry']:
-                patient['meds'].append(info['resource']['MedicationPrescription']['medication']['display'])
+                medications.append(info['resource']['MedicationPrescription']['medication']['display'])
     except:
         pass
 
     return render_template('view_fhir_patient.html', name=name, gender=gender, dob=dob, age=age, address=address, 
-        phone=phone, fhir_id=fhir_id)
+        phone=phone, fhir_id=fhir_id, allergens=a, meds=medications)
 
 #Doctor can view all patients and choose to add/delete
 @app.route('/dashboard')
