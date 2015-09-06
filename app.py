@@ -177,8 +177,8 @@ def view_patient(patient_index):
             'phone': request.form['phone']}}})
 
         doctor_id = request.form['choose-doctor']
-        users.update_one({'_id': ObjectId(doctor_id)}, {'$push': {'patients': patient}})
         users.update_one({'_id': ObjectId(user_id)}, {'$pull': {'patients': patient}})
+        users.update_one({'_id': ObjectId(doctor_id)}, {'$push': {'patients': patient}})
 
         return redirect('/dashboard')
 
