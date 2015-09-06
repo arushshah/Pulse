@@ -71,12 +71,11 @@
             </div>
         </div>
         
-        {% for i in range(patients|length) %}
+        {%    for i in range(patients|length) %}
         <div class="row">
             <div class="col-md-2"></div>
             <div class="col-md-8">
-<<<<<<< HEAD
-            <div class="row" style="background-color: white; margin-top:40px">
+            <div class="row" style="background-color: white; margin-top:10px">
                 {% if patients[i]['isFhir'] %}
                 <h3 class="listed-patient"><a href="/view_fhir_patient/{{ patients[i]['fhir_id'] }}">{{ patients[i]['name'] }}</a></h3>
                 {% else %}
@@ -87,16 +86,7 @@
                 </div>
             </div>
             </div>
-=======
-                <div class="row" style="background-color: white; margin-top: 5px">
-                    {% if patients[i]['isFhir'] %}
-                    <h3 class="listed-patient"><a href="/view_fhir_patient/{{ patients[i]['fhir_id'] }}">{{ patients[i]['name'] }}</a></h3>
-                    {% else %}
-                    <h3 class="listed-patient"><a href="/view_patient/{{ i }}">{{ patients[i]['name'] }}</a></h3>
-                    {% endif %}
-                </div>
->>>>>>> origin/master
-            </div>
+            
             <div class="col-md-2"></div>
         </div>
         {% endfor %}

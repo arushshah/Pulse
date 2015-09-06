@@ -172,7 +172,7 @@ def view_patient(patient_index):
         return redirect('/dashboard')
 
     return render_template('view_patient.html', name=patient['name'], gender=patient['gender'], dob=patient['dob'],
-        age=patient['age'], address=patient['address'], phone=patient['phone'], i=patient_index)
+        age=patient['age'], address=patient['address'], phone=patient['phone'], i=patient_index, patient=patient)
 
 #View details of a patient from Epic's Fhir API
 @app.route('/view_fhir_patient/<fhir_id>', methods=['GET', 'POST'])
@@ -275,26 +275,26 @@ def add_patient():
 
     return render_template('add_patient.html')
 
-@app.route('/download_report', methods=['POST'])
-def download_report():
-	g.patient_id = requests.form['patient_id']
-	#generate html file, open file etc
-	pdf_file = open('templates/report.html','w')
-	pdf_file.write('')
-	pdf_file.close()	
-	#convert to PDF
-	pdf = StringIO()
-	pisa.CreatePDF(StringIO(render_template('report.html')),pdf)
-	#download PDF
-	response = make_response(pdf.getvalue())
-	response.headers["Content-Disposition"] = 'attachment; filename=report.pdf'
-	return response
-	
+@app.route('/download_report/<patient_index>', methods=['POST'])
+def download_report(patient_index):
+    #g.patient_id = requests.form['patient_id']
+    #generate html file, open file etc
+    user_id = current_user.get_id()
+    user = users.find_one({'_id': ObjectId(user_id)})
+    patient = user['patients'][int(patient_index)]
 
-@app.after_request
-def redirect_to_patient(response):
-	patient_id = g.get('patient_id')
-	#redirect to view page
+    html = '<h1 style="text-align: center"></h1><br>'
+
+    pdf_file = open('templates/report.html','w')
+    pdf_file.write('')
+    pdf_file.close()    
+    #convert to PDF
+    pdf = StringIO()
+    pisa.CreatePDF(StringIO(render_template('report.html')),pdf)
+    #download PDF
+    response = make_response(pdf.getvalue())
+    response.headers["Content-Disposition"] = 'attachment; filename=report.pdf'
+    return response
 
 def pullFIHRPatientBio(patient_id):
     bio = requests.get("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/Patient/%s" % patient_id, headers=headers)
@@ -348,5 +348,5 @@ def getTreatment(disease):
     return(json.loads(r.text)[0]['question']['evidencelist'][0]['text'])
 
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0',port=80)
-    #app.run(debug=True)
+    #app.run(debug=True,host='0.0.0.0',port=80)
+    app.run(debug=True)
