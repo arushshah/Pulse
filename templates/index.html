@@ -7,16 +7,35 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
         <link rel = "stylesheet" type = "text/css" href="/static/css/styles.css">
         <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
     </head>
         
+    <script>
+        $(document).ready(function() {
+            $(".title").hide();
+            $("#care").hide();
+            $("#simplified").hide();
+            $("#but").hide();
+           $(".title").fadeIn(1000);
+            $("#care").fadeIn(2000);
+            $("#simplified").fadeIn(3000);
+            $("#but").fadeIn(4000);
+            
+        });
+    </script>
+    
+    
     <body>
             <img id="bg" src="http://www.cdc.gov/stroke/images/medical_conditions.jpg">
                         
                 <div style="text-align:center">
                     <h1 style="font-size: 200px; font-family: Quicksand, sans-serif" class="title">Pulse</h1>
-                    <h3 style="font-size: 40px; font-family: Quicksand, sans-serif; font-weight:bold; color: gray"><i>Care Simplified</i></h3>
-                    <a href="/login"><button id="login_button" type="button" style="margin-top: 5%">Login</button></a>
-                    <a href="/register"><button id="signup_button" type="button" style="margin-top: 5%">Sign Up</button></a>
+                    
+                    <div style="text-align:center"><h3 id="care" style="font-size: 40px; font-family: Quicksand, sans-serif; font-weight:bold; color: gray"><i>Care</i></h3><h3 id="simplified" style="font-size: 40px; font-family: Quicksand, sans-serif; font-weight:bold; color: gray"><i>Simplified</i></h3>
+                        </div>
+                    <div id="but"><a href="/login"><button id="login_button" type="button" style="margin-top: 5%">Login</button></a>
+                    <a href="/register"><button id="signup_button" type="button" style="margin-top: 5%">Sign Up</button></a></div>
                 </div>
             
             

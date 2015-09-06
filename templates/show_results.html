@@ -48,7 +48,7 @@
         <br>
         <!-- Page Content -->
         <div class="container">
-            <h1 style="text-align: center" class="page-header">Treatment for <b><u>{{ patient['name'] }}</u></b></h1>
+            <h1 style="text-align: center" class="page-header">Treatment for <b>{{ patient['name'] }}</b></h1>
             <div class="col-md-4">
                 <h2>Symptoms You Entered</h2>
                 <ul>
@@ -59,8 +59,9 @@
             </div>
             
             <div class="col-md-4">
-                <h2>You Thought the Condition was: {{ disease }}</h2>
-                <h3><b>Common symptoms of {{ disease }}:</b></h3>
+                <h2>You Thought the Condition was: <b>{{ disease }}</b></h2>
+                <hr style="border: 1px solid #2980b9">
+            <h3><b>Common symptoms of <b>{{ disease }}</b>:</b></h3>
                 <p>{{ possible_symptoms }}</p>
             </div>
             
@@ -69,7 +70,7 @@
                 <p>{{ solution }}</p>
             </div>
             
-            <form method="POST">
+            <form method="POST" action="/show_results">
                 <input type="hidden" name="add_medication" value="yes">
                 <input type="hidden" name="index" value="{{ index }}">
                 <input type="hidden" name="medication" value="{{ disease }} Treatment">

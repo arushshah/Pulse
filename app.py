@@ -276,8 +276,8 @@ def add_patient():
     user = users.find_one({'_id': ObjectId(user_id)})
 
     if request.method == 'POST':
-        allergens = [request.form['allergen']]
-        medications = [request.form['medication']]
+        allergens = request.form['allergen'].split(',')
+        medications = request.form['medication'].split(',')
 
         users.update_one({'_id': ObjectId(user_id)}, {'$push': {'patients': {'name': request.form['name'],
             'gender': request.form['gender'], 'dob': request.form['dob'], 'age': request.form['age'], 
@@ -295,7 +295,7 @@ def download_report(patient_index):
     user = users.find_one({'_id': ObjectId(user_id)})
     patient = user['patients'][int(patient_index)]
 
-    html = '<div style="background-color: #2ecc71">'
+    html = '<div>'
     html += '<h1 style="text-align: center; font-size: 250%; padding-top: 10px">' + patient['name'] + '</h1></div>'
     html += '<h1 style="text-align: center; font-size: 210%">Medical Report</h1>'
     html += '<h1>Gender: %s</h1>' % patient['gender']
@@ -303,12 +303,12 @@ def download_report(patient_index):
     html += '<h1>Home Address: %s</h1>' % patient['address']
     html += '<h1>Phone Number: %s</h1><br>' % patient['phone']
 
-    html += '<div style="background-color: #1abc9c"><h1 style="padding-top: 10px; text-align: center; font-size: 175%">Medications</h1></div><br>'
+    html += '<div><h1 style="padding-top: 10px; text-align: center; font-size: 175%">Medications</h1></div><br>'
     
     for med in patient['medications']:
         html += '<li><h1>' + med + '</h1></li>'
 
-    html += '<div style="background-color: #e74c3c"><h1 style="padding-top: 10px; text-align: center; font-size: 175%">Allergens</h1></div><br>'
+    html += '<div><h1 style="padding-top: 10px; text-align: center; font-size: 175%">Allergens</h1></div><br>'
     for allergen in patient['allergens']:
         html += '<li><h1>' + allergen + '</h1></li>'
 
